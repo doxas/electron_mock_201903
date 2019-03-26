@@ -6,7 +6,8 @@
   "scripts": {
     "electron": ".\\node_modules\\electron\\dist\\electron.exe .\\app\\server\\main.js",
     "debug": "node index.js --development",
-    "build": "node index.js --production"
+    "build": "node index.js --production",
+    "start": "npm-run-all debug"
   },
   "repository": {
     "type": "git",
