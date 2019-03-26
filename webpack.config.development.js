@@ -1,5 +1,6 @@
 
 const path      = require('path');
+const webpack   = require('webpack');
 const externals = require('webpack-node-externals');
 const mode      = 'development';
 const devtool   = 'inline-source-map';
@@ -31,6 +32,11 @@ module.exports = {
             }]
         }]
     },
+    plugins: [
+        new webpack.DefinePlugin({
+          __MODE__: JSON.stringify(mode)
+        })
+    ],
     cache: true,
     devtool: devtool
 };
