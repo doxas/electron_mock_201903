@@ -1,5 +1,5 @@
 
 (() => {
-    console.log('🍉 🍉 🍉');
+    console.log(`🍰 ${__MODE__}  🍰`);
 })();
 
