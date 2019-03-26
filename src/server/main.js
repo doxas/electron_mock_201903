@@ -3,6 +3,7 @@ import {app, BrowserWindow} from 'electron';
 import connect from 'electron-connect';
 
 let win;
+let client;
 
 function createWindow(){
     win = new BrowserWindow({
@@ -15,9 +16,10 @@ function createWindow(){
 
     win.on('closed', () => {
         win = null;
+        client.sendMessage('quit', null);
     });
 
-    connect.client.create(win);
+    client = connect.client.create(win);
 }
 
 app.on('ready', createWindow);
