@@ -15,26 +15,36 @@ const MAIN_WINDOW_PARAMETER = {
 };
 
 // variables ==================================================================
-let mainWindow;
-let connectClient;
+let mainWindow;    // main window
+let connectClient; // connector from electron-connect for client
 
 // app events =================================================================
-app.on('ready', createMainWindow);
+let isLockable = app.requestSingleInstanceLock();
+if(isLockable !== true){app.quit();}
+
+app.on('second-instance', () => {
+    if(mainWindow != null){
+        if(mainWindow.isMinimized() === true){
+            mainWindow.restore();
+        }
+        mainWindow.focus();
+    }
+});
+
+app.on('ready', () => {
+    createMainWindow();
+});
 
 app.on('window-all-closed', () => {
     mainWindow = null;
-    process.exit(0);
+    app.quit();
 });
 
 // function ===================================================================
 function createMainWindow(){
+    // create new browser window
     mainWindow = new BrowserWindow(MAIN_WINDOW_PARAMETER);
     mainWindow.loadFile(INDEX_HTML_PATH);
-
-    if(IS_DEVELOPMENT === true){
-        connectClient = connect.client.create(mainWindow);
-        mainWindow.webContents.openDevTools();
-    }
 
     mainWindow.on('closed', () => {
         mainWindow = null;
@@ -42,5 +52,10 @@ function createMainWindow(){
             connectClient.sendMessage('quit', null);
         }
     });
+
+    if(IS_DEVELOPMENT === true){
+        connectClient = connect.client.create(mainWindow);
+        mainWindow.webContents.openDevTools();
+    }
 }
 
