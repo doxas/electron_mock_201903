@@ -1,29 +1,46 @@
 
+import path from 'path';
 import {app, BrowserWindow} from 'electron';
 import connect from 'electron-connect';
 
-let win;
-let client;
+// constant variable ==========================================================
+const IS_DEVELOPMENT = __MODE__ === 'development';
+const INDEX_HTML_PATH = path.resolve(process.cwd(), './app/client/index.html');
+const MAIN_WINDOW_PARAMETER = {
+    width: 1200,
+    height: 800,
+    webPreferences: {
+        nodeIntegration: true
+    }
+};
 
-function createWindow(){
-    win = new BrowserWindow({
-        width: 1200,
-        height: 800
-    });
+// variables ==================================================================
+let mainWindow;
+let connectClient;
 
-    win.loadFile('./app/client/index.html');
-    win.webContents.openDevTools();
-
-    win.on('closed', () => {
-        win = null;
-        client.sendMessage('quit', null);
-    });
-
-    client = connect.client.create(win);
-}
-
-app.on('ready', createWindow);
+// app events =================================================================
+app.on('ready', createMainWindow);
 
 app.on('window-all-closed', () => {
-    win = null;
+    mainWindow = null;
+    process.exit(0);
 });
+
+// function ===================================================================
+function createMainWindow(){
+    mainWindow = new BrowserWindow(MAIN_WINDOW_PARAMETER);
+    mainWindow.loadFile(INDEX_HTML_PATH);
+
+    if(IS_DEVELOPMENT === true){
+        connectClient = connect.client.create(mainWindow);
+        mainWindow.webContents.openDevTools();
+    }
+
+    mainWindow.on('closed', () => {
+        mainWindow = null;
+        if(IS_DEVELOPMENT === true){
+            connectClient.sendMessage('quit', null);
+        }
+    });
+}
+
