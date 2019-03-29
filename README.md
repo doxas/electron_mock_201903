@@ -10,7 +10,7 @@ $ npm run start
 
 ## outline
 
-`webpack` でソースコードをバンドルしたのち、モードに応じて `electron` を起動する。
+`webpack` でソースコードをバンドルしたのち、モードによっては `electron` を起動するところまで自動で行う。
 
 `webpack` が処理する対象は、大きく client と server に大別できる。
 
@@ -22,9 +22,9 @@ $ npm run start
 3. webpack-dev-server によってブラウザがリロードされる
 ```
 
-`electron` を用いる場合は、ブラウザではなく独立したウィンドウ上にフロントの実装が表示されることになるが、同時にサーバとなるメインプロセスも同時に起動することになるため、もしサーバ側の実装に変更があった場合は `electron` 自体を再起動しなければならない。
+`electron` を用いる場合は、ブラウザではなく独立したウィンドウ上にフロントの実装が表示されることになるが、サーバとなるメインプロセスも同時に起動することになるため、もしサーバ側の実装に変更があった場合は `electron` 自体を再起動しなければならない。
 
-この問題に対処する方法としては `gulp` を用いるのが場合としては多いようだが、ここでは `index.js` 内で `webpack` を `require` して実行することで、変更を Node.js で検出しつつ処理を行っている。
+この問題に対処する方法としては `gulp` を用いるのが場合としては多いようだが、ここでは `index.js` 内で `webpack` を `require` して実行することで、変更を Node.js で検出しつつ処理を行っている。要約すると、コマンドとして直接 `webpack` コマンドを用いるのではなく、わざわざ `index.js` を利用して `webpack` を `require` して処理しているのは *Electron のメインプロセスも webpack を通したい* からである。（これはたとえばメインプロセスも TypeScript で書きたい、といった場合の要件と同じ）
 
 `electron` のリロードや再起動は `electron-connect` で取り回ししている。
 
@@ -35,14 +35,14 @@ $ npm run start
 4. コマンドライン引数に応じて index.js 内で webpack をモードを変えて起動
 5. 開発モードの場合はそのまま electron を起動し watch する
 
-※ npm run start は開発モードの実行
+※ npm run start は開発モード実行のエイリアス
 ```
 
 ## how to
 
 `webpack` の挙動を変えたい場合、通常 `webpack.config.js` で設定可能な項目については、開発モード用の `webpack.config.development.js` か `webpack.config.production.js` の中身を修正すればよい。
 
-現状では `webpack` の v4 系で追加された `mode` を切り替えている他、ソースマップを出力するかどうかが異なる。
+現状では `webpack` の v4 系で追加された `mode` を切り替えている他、ソースマップを出力するかどうかが両者のモードによって異なる。
 
 `webpack` 単体ではなく、バンドルから `electron` の起動までのプロセスを変更したい場合には `index.js` を修正する。
 
@@ -55,6 +55,7 @@ $ npm run start
 
 * `src/client/script.js` と `src/server/main.js` がエントリポイントになるファイル
 * `app/client/script.js` と `app/server/main.js` がバンドル後の出力ファイル
+* 原則として出力後のファイルはクライアントとサーバそれぞれ単体ファイルになる
 * 上記の `app/` 以下にあるファイルは Git の管理対象になっていない（ `.gitignore` に記載）
 * JavaScript のフレームワーク等を一切含まないシンプルな構成
 * clone 直後などは `app/server` のディレクトリが無いはずなので注意
