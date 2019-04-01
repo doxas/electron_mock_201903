@@ -9,6 +9,9 @@ $ npm install
 $
 $ # run development mode
 $ npm run start
+$
+$ # test and coverage preview
+$ npm run test
 ```
 
 ## outline
@@ -71,6 +74,64 @@ $ npm run start
 * clone 直後などは `app/server` のディレクトリが無いはずなので注意
 * 現状は複数起動を許可しない実装になっている
 * 本リポジトリには現時点では packager は含まれていない
+
+## test
+
+ユニットテスト用に jest を採用。使い方等の詳細については本家を参照。
+
+[Jest · 🃏 Delightful JavaScript Testing](https://jestjs.io/)
+
+ここでは「ひとつのクラス（ `export default class XXXX` ）に対してひとつのテスト（ `__tests__/client or server/XXXX.test.js` ）を設ける」形にしている。
+
+おおまかな方針として、できる限り「広い範囲をカバーする巨大なユーティリティクラス」を作らないように務める。これは影響範囲が大きくなりすぎないようにするためである。
+
+ただし、たとえば「文字列かどうか判定する」といったような、非常にプリミティブな機能に関しては、むしろ client と server でそれぞれに分離して持つというのもメンテナンス性を下げる要因となり得るため、これらは `common.js` としてまとめる。
+
+そこで以下のように構成する。
+
+```
+root
+ |
+ +- src
+ |   |
+ |   +- common.js（client と server に共通するもの）
+ |   |
+ |   +- client
+ |   |   |
+ |   |   +- script.js (./lib/XXXX.js を読み込むメインスクリプト)
+ |   |   |
+ |   |   +- lib
+ |   |       |
+ |   |       +- XXXX.js
+ |   |
+ |   +- server
+ |       |
+ |       +- main.js (./lib/XXXX.js を読み込むメインスクリプト)
+ |       |
+ |       +- lib
+ |           |
+ |           +- XXXX.js
+ |
+ +- __tests__
+     |
+     +- common.test.js
+     |
+     +- client
+     |   |
+     |   +- XXXX.test.js
+     |
+     +- server
+         |
+         +- XXXX.test.js
+```
+
+まとめると、次のようになる。
+
+* `src/client or server/lib` 以下に単体のクラスを `export default` するモジュールを置く
+* そのモジュールに対応したテストを `__tests__/client or server/` 以下に置く
+* client と server に共通の機能は `src/common.js` に記述
+* それに対するテストは `__tests__/common.test.js` に記述
+* ユニットテストが行いやすいようにシンプルなクラス設計を心がける
 
 
 
