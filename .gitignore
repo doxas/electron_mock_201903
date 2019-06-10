@@ -2,5 +2,8 @@
 node_modules/
 app/client/script.js
 app/server/main.js
+app/*.json
+dist/*
+!dist/icon.png
 coverage/
 
