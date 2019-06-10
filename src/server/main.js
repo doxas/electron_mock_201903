@@ -5,7 +5,7 @@ import connect from 'electron-connect';
 
 // constant variable ==========================================================
 const IS_DEVELOPMENT = __MODE__ === 'development';
-const INDEX_HTML_PATH = path.resolve(process.cwd(), './app/client/index.html');
+const INDEX_HTML_PATH = IS_DEVELOPMENT ? './app/client/index.html' : './client/index.html';
 const MAIN_WINDOW_PARAMETER = {
     width: 1200,
     height: 800,
