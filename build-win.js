@@ -13,6 +13,7 @@ builder.build({
     platform: 'win',
     config: {
         appId: `com.example.${appName}`,
+        artifactName: '${productName}.${ext}',
         win: {
             target: 'portable',
             icon: './dist/icon.png',
